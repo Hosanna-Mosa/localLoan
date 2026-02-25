@@ -1,14 +1,9 @@
 {
   "cli": {
     "version": ">= 16.28.0",
-    "appVersionSource": "remote",
-    "packageManager": "npm"
+    "appVersionSource": "remote"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
     "preview": {
       "distribution": "internal",
       "android": {
@@ -18,8 +13,5 @@
     "production": {
       "autoIncrement": true
     }
-  },
-  "submit": {
-    "production": {}
   }
 }
