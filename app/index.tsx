@@ -26,44 +26,29 @@ import {
   User,
   MoreHorizontal,
   HandCoins,
+  IndianRupee,
+  Timer,
+  Percent,
 } from 'lucide-react-native';
 import colors from '@/constants/colors';
 import { loans, categories, banners, LoanItem } from '@/mocks/loans';
 
+
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 function BannerCarousel() {
-  const scrollX = useRef(new Animated.Value(0)).current;
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-
-  const onScroll = Animated.event(
-    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-    { useNativeDriver: false }
-  );
-
-  const onMomentumScrollEnd = useCallback(
-    (e: { nativeEvent: { contentOffset: { x: number } } }) => {
-      const index = Math.round(
-        e.nativeEvent.contentOffset.x / (SCREEN_WIDTH - 32)
-      );
-      setActiveIndex(index);
-    },
-    []
-  );
 
   return (
     <View style={bannerStyles.container}>
       <FlatList
         data={banners}
         horizontal
-        pagingEnabled
+        pagingEnabled={false}
         showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        onMomentumScrollEnd={onMomentumScrollEnd}
         keyExtractor={(item) => item.id}
-        snapToInterval={SCREEN_WIDTH - 32}
+        snapToInterval={SCREEN_WIDTH - 60 + 16}
         decelerationRate="fast"
-        contentContainerStyle={{ paddingHorizontal: 0 }}
+        contentContainerStyle={{ paddingRight: 16 }}
         renderItem={({ item }) => (
           <View style={bannerStyles.bannerItem}>
             <Image
@@ -71,42 +56,78 @@ function BannerCarousel() {
               style={bannerStyles.bannerImage}
               contentFit="cover"
             />
-            <View style={bannerStyles.bannerOverlay}>
-              <Text style={bannerStyles.bannerTitle}>{item.title}</Text>
-              <Text style={bannerStyles.bannerSubtitle}>{item.subtitle}</Text>
+            <View style={bannerStyles.bannerContent}>
+              <Text style={bannerStyles.bannerSubtitle}>
+                {item.id === '1' ? (
+                  <>
+                    <Text style={{ color: '#FFF' }}>Ab loan milega{"\n"}</Text>
+                    <Text style={{ color: '#FCD34D' }}>Bumrah ki speed par</Text>
+                  </>
+                ) : (
+                  item.subtitle
+                )}
+              </Text>
+              <View style={bannerStyles.brandTag}>
+                <Text style={bannerStyles.brandText}>L&T Finance</Text>
+                <Text style={bannerStyles.brandMain}>JUST ZOOM</Text>
+                <Text style={bannerStyles.brandSub}>TWO-WHEELER LOANS</Text>
+              </View>
             </View>
           </View>
         )}
       />
-      <View style={bannerStyles.dotContainer}>
-        {banners.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              bannerStyles.dot,
-              activeIndex === index && bannerStyles.dotActive,
-            ]}
-          />
-        ))}
-      </View>
+
     </View>
   );
 }
 
 const bannerStyles = StyleSheet.create({
   container: {
-    marginTop: 16,
-    paddingHorizontal: 16,
+    marginTop: 8,
   },
   bannerItem: {
-    width: SCREEN_WIDTH - 32,
-    height: 160,
-    borderRadius: 14,
+    width: SCREEN_WIDTH - 60,
+    height: 180,
+    borderRadius: 12,
     overflow: 'hidden',
+    backgroundColor: '#0A3D62',
+    marginLeft: 16,
   },
   bannerImage: {
     width: '100%',
     height: '100%',
+    position: 'absolute',
+  },
+  bannerContent: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'space-between',
+  },
+  bannerSubtitle: {
+    color: '#FFF',
+    fontSize: 24,
+    fontWeight: '800' as const,
+    lineHeight: 32,
+  },
+  brandTag: {
+    marginTop: 'auto',
+  },
+  brandText: {
+    color: '#FCD34D',
+    fontSize: 12,
+    fontWeight: '700' as const,
+  },
+  brandMain: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: '900' as const,
+    letterSpacing: 1,
+  },
+  brandSub: {
+    color: '#FFF',
+    fontSize: 10,
+    fontWeight: '600' as const,
+    opacity: 0.8,
   },
   bannerOverlay: {
     position: 'absolute',
@@ -114,22 +135,17 @@ const bannerStyles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 16,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   bannerTitle: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: '700' as const,
   },
-  bannerSubtitle: {
-    color: '#E0E0E0',
-    fontSize: 13,
-    marginTop: 2,
-  },
   dotContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: 12,
     gap: 6,
   },
   dot: {
@@ -212,9 +228,11 @@ const catStyles = StyleSheet.create({
   label: {
     marginTop: 8,
     fontSize: 12,
-    fontWeight: '600' as const,
+    fontWeight: '400' as const,
     color: colors.textPrimary,
     textAlign: 'center',
+    // fontFamily: '',
+    opacity: 0.8,
   },
 });
 
@@ -230,8 +248,8 @@ function LoanCard({ item }: { item: LoanItem }) {
       >
         <Heart
           size={13}
-          color={liked ? colors.heartPink : '#C4C4C4'}
-          fill={liked ? colors.heartPink : 'transparent'}
+          color={liked ? colors.loanAmount : '#C4C4C4'}
+          fill={liked ? colors.loanAmount : 'transparent'}
         />
       </TouchableOpacity>
 
@@ -260,9 +278,7 @@ function LoanCard({ item }: { item: LoanItem }) {
             <View
               style={[cardStyles.tag, { backgroundColor: colors.tagGreen }]}
             >
-              <View
-                style={[cardStyles.tagDot, { backgroundColor: colors.green }]}
-              />
+              <IndianRupee size={10} color={colors.green} />
               <Text
                 style={[cardStyles.tagText, { color: colors.tagGreenText }]}
                 numberOfLines={1}
@@ -273,9 +289,7 @@ function LoanCard({ item }: { item: LoanItem }) {
             <View
               style={[cardStyles.tag, { backgroundColor: colors.tagOrange }]}
             >
-              <View
-                style={[cardStyles.tagDot, { backgroundColor: colors.orange }]}
-              />
+              <Timer size={10} color={colors.orange} />
               <Text
                 style={[cardStyles.tagText, { color: colors.tagOrangeText }]}
                 numberOfLines={1}
@@ -284,9 +298,7 @@ function LoanCard({ item }: { item: LoanItem }) {
               </Text>
             </View>
             <View style={[cardStyles.tag, { backgroundColor: colors.tagBlue }]}>
-              <View
-                style={[cardStyles.tagDot, { backgroundColor: colors.blue }]}
-              />
+                <Percent size={10} color={colors.blue} />
               <Text
                 style={[cardStyles.tagText, { color: colors.tagBlueText }]}
                 numberOfLines={1}
@@ -315,7 +327,7 @@ function LoanCard({ item }: { item: LoanItem }) {
 const cardStyles = StyleSheet.create({
   card: {
     backgroundColor: colors.cardBg,
-    borderRadius: 14,
+    borderRadius: 10,
     marginHorizontal: 16,
     marginBottom: 12,
     padding: 12,
@@ -340,11 +352,11 @@ const cardStyles = StyleSheet.create({
   },
   heartBtn: {
     position: 'absolute',
-    top: 12,
-    left: 12,
+    top: 20,
+    left: 20,
     zIndex: 2,
-    width: 20,
-    height: 20,
+    width: 15,
+    height: 15,
     borderRadius: 10,
     backgroundColor: '#FFF',
     justifyContent: 'center',
@@ -356,7 +368,10 @@ const cardStyles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 3,
       },
-      android: { elevation: 2 },
+      android: {  shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,},
       web: {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
@@ -368,14 +383,32 @@ const cardStyles = StyleSheet.create({
   locationBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 3,
+    gap: 2,
     marginLeft: 8,
     flexShrink: 0,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 2,
+      },
+      web: {
+        boxShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+      },
+    }),
   },
   locationText: {
     fontSize: 10,
-    color: colors.textSecondary,
-    fontWeight: '500' as const,
+    color: colors.accent,
+    fontWeight: '600' as const,
   },
   row: {
     flexDirection: 'row',
@@ -383,9 +416,9 @@ const cardStyles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   imageWrap: {
-    width: 100,
+    width: 120,
     height: 90,
-    borderRadius: 10,
+    borderRadius: 5,
     overflow: 'hidden',
     backgroundColor: '#F5F5F5',
   },
@@ -406,14 +439,14 @@ const cardStyles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontWeight: '700' as const,
+    fontWeight: '600' as const,
     color: colors.textPrimary,
     flex: 1,
     minWidth: 0,
   },
   loanAmount: {
     fontSize: 16,
-    fontWeight: '800' as const,
+    fontWeight: '600' as const,
     color: colors.loanAmount,
     marginTop: 2,
     marginBottom: 8,
@@ -427,12 +460,26 @@ const cardStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 12,
-    gap: 4,
+    paddingVertical: 2,
+    borderRadius: 8,
+    gap: 2,
     width: '32%',
     minWidth: 0,
     justifyContent: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 2,
+      },
+      web: {
+        boxShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+      },
+    }),
   },
   tagDot: {
     width: 6,
@@ -441,7 +488,7 @@ const cardStyles = StyleSheet.create({
   },
   tagText: {
     fontSize: 9,
-    fontWeight: '600' as const,
+    fontWeight: '400' as const,
   },
   labelsRow: {
     flexDirection: 'row',
@@ -462,6 +509,32 @@ export default function HomeScreen() {
   const [searchText, setSearchText] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('home');
 
+  // ── Scroll-driven header collapse ──────────────────────────────────
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // Height of the collapsible portion (headerRow only — logo stays visible)
+  const COLLAPSE_HEIGHT = 52; // headerRow height
+  const THRESHOLD = 40;       // how many px of scroll before fully collapsed
+
+  const topSectionHeight = scrollY.interpolate({
+    inputRange: [0, THRESHOLD],
+    outputRange: [COLLAPSE_HEIGHT, 0],
+    extrapolate: 'clamp',
+  });
+
+  const topSectionOpacity = scrollY.interpolate({
+    inputRange: [0, THRESHOLD * 0.6],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
+  const topSectionTranslateY = scrollY.interpolate({
+    inputRange: [0, THRESHOLD],
+    outputRange: [0, -COLLAPSE_HEIGHT],
+    extrapolate: 'clamp',
+  });
+  // ──────────────────────────────────────────────────────────────────
+
   const tabs = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'myloans', label: 'My Loans', icon: HandCoins },
@@ -473,30 +546,59 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <LinearGradient
-        colors={[colors.primaryDark, colors.primary, 'rgba(109, 40, 217, 0.4)', 'transparent']}
-        style={[styles.header, { paddingTop: insets.top + 16 }]}
-      >
-        <Text style={styles.logo}>LOCAL LOANS</Text>
-        <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.menuBtn} activeOpacity={0.7}>
-            <View style={styles.menuIcon}>
-              <View style={[styles.menuBar, styles.menuBarTop]} />
-              <View style={[styles.menuBar, styles.menuBarMiddle]} />
-              <View style={[styles.menuBar, styles.menuBarBottom]} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.locationChip} activeOpacity={0.7}>
-            <MapPin size={14} color={colors.white} />
-            <Text style={styles.locationLabel}>Kakinada</Text>
-          </TouchableOpacity>
-          <View style={{ flex: 1 }} />
-          <TouchableOpacity style={styles.bellBtn} activeOpacity={0.7}>
-            <Bell size={22} color={colors.white} />
-            <View style={styles.notificationDot} />
-          </TouchableOpacity>
-        </View>
 
+      {/* Absolute gradient background that covers header + banner area */}
+      <LinearGradient
+        colors={[
+          colors.primaryDark,
+          colors.primary,
+          colors.primary,
+          'rgba(109, 40, 217, 0.75)',
+          'rgba(109, 40, 217, 0.3)',
+          'transparent',
+        ]}
+        locations={[0, 0.2, 0.45, 0.65, 0.82, 1]}
+        style={styles.gradientBg}
+      />
+
+      {/* Header content */}
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+        {/* Always visible: logo */}
+        <Text style={styles.logo}>Local Loans</Text>
+
+        {/* Collapsible: menu / location / bell row */}
+        <Animated.View
+          style={[
+            styles.headerTopSection,
+            {
+              height: topSectionHeight,
+              opacity: topSectionOpacity,
+              transform: [{ translateY: topSectionTranslateY }],
+            },
+          ]}
+          pointerEvents="box-none"
+        >
+          <View style={styles.headerRow}>
+            <TouchableOpacity style={styles.menuBtn} activeOpacity={0.7}>
+              <View style={styles.menuIcon}>
+                <View style={[styles.menuBar, styles.menuBarTop]} />
+                <View style={[styles.menuBar, styles.menuBarMiddle]} />
+                <View style={[styles.menuBar, styles.menuBarBottom]} />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.locationChip} activeOpacity={0.7}>
+              <MapPin size={14} color={colors.white} />
+              <Text style={styles.locationLabel}>Kakinada</Text>
+            </TouchableOpacity>
+            <View style={{ flex: 1 }} />
+            <TouchableOpacity style={styles.bellBtn} activeOpacity={0.7}>
+              <Bell size={22} color={colors.white} />
+              <View style={styles.notificationDot} />
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+
+        {/* Always visible: search bar */}
         <View style={styles.searchContainer}>
           <Search size={20} color={colors.white} />
           <TextInput
@@ -507,24 +609,31 @@ export default function HomeScreen() {
             onChangeText={setSearchText}
           />
         </View>
-      </LinearGradient>
+      </View>
 
-      <ScrollView
+      <Animated.ScrollView
         style={styles.scrollView}
         contentContainerStyle={{ paddingBottom: 90 }}
         showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
       >
         <BannerCarousel />
-        <CategorySection />
+        <View style={styles.whiteContent}>
+          <CategorySection />
 
-        <View style={styles.discoverSection}>
-          <Text style={styles.discoverTitle}>Discover all loans near you</Text>
+          <View style={styles.discoverSection}>
+            <Text style={styles.discoverTitle}>Discover all loans near you</Text>
+          </View>
+
+          {loans.map((loan) => (
+            <LoanCard key={loan.id} item={loan} />
+          ))}
         </View>
-
-        {loans.map((loan) => (
-          <LoanCard key={loan.id} item={loan} />
-        ))}
-      </ScrollView>
+      </Animated.ScrollView>
 
       <View
         style={[
@@ -570,12 +679,12 @@ export default function HomeScreen() {
             >
               <IconComp
                 size={22}
-                color={isActive ? colors.tabActive : colors.tabInactive}
+                color={isActive ? colors.tabActive : colors.accent}
               />
               <Text
                 style={[
                   styles.tabLabel,
-                  { color: isActive ? colors.tabActive : colors.tabInactive },
+                  { color: isActive ? colors.tabActive : colors.accent },
                 ]}
               >
                 {tab.label}
@@ -593,19 +702,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  gradientBg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 400,
+  },
   header: {
     paddingHorizontal: 16,
-    paddingBottom: 32,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
+    paddingBottom: 12,
+    overflow: 'hidden',
+  },
+  headerTopSection: {
+    overflow: 'hidden',
   },
   logo: {
     fontSize: 20,
-    fontWeight: '800' as const,
-    fontStyle:"normal",
+    fontWeight: '600' as const,
+    fontStyle: 'normal',
     color: colors.white,
     letterSpacing: 0.4,
-    marginBottom: 16,
+    marginBottom: 6,
     textTransform: 'uppercase',
   },
   headerRow: {
@@ -640,10 +758,10 @@ const styles = StyleSheet.create({
   locationChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.25)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 10,
+    backgroundColor: 'rgba(30, 27, 75, 0.6)',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
     gap: 6,
     marginLeft: 0,
   },
@@ -671,13 +789,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 14,
+    borderRadius: 8,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginTop: 24,
+    paddingVertical: 14,
+    marginTop: 8,
     gap: 12,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.25)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.4)',
   },
   searchInput: {
     flex: 1,
@@ -687,10 +805,14 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    backgroundColor: 'transparent',
+  },
+  whiteContent: {
     backgroundColor: colors.background,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    marginTop: -20,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    marginTop: 12,
+    paddingTop: 4,
   },
   discoverSection: {
     paddingHorizontal: 16,
@@ -716,11 +838,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingBottom: 8,
     flex: 1,
+    
   },
   tabLabel: {
-    fontSize: 11,
+    fontSize: 12,
     marginTop: 4,
-    fontWeight: '600' as const,
+    fontWeight: '400' as const,
+    
   },
   applyBtnWrap: {
     alignItems: 'center',
@@ -748,29 +872,29 @@ const styles = StyleSheet.create({
   },
   ribbonFoldLeft: {
     position: 'absolute',
-  bottom: -3,
+    bottom: -3,
 
-  left: -9,
-  width: 0,
-  height: 0,
-  borderStyle: 'solid',
-  borderBottomWidth: 15,
-  borderLeftWidth: 18,
-  borderBottomColor: '#EB008B',
-  borderLeftColor: 'transparent',
+    left: -9,
+    width: 0,
+    height: 0,
+    borderStyle: 'solid',
+    borderBottomWidth: 15,
+    borderLeftWidth: 18,
+    borderBottomColor: '#EB008B',
+    borderLeftColor: 'transparent',
   },
   ribbonFoldRight: {
-     position: 'absolute',
-  bottom: -3,
-  right: -9,
-  width: 0,
-  height: 0,
-  borderStyle: 'solid',
-  borderBottomWidth: 15,
-  borderRightWidth: 18,
-  borderBottomColor: '#EB008B',
-  borderRightColor: 'transparent',
-  zIndex: -1,
+    position: 'absolute',
+    bottom: -3,
+    right: -9,
+    width: 0,
+    height: 0,
+    borderStyle: 'solid',
+    borderBottomWidth: 15,
+    borderRightWidth: 18,
+    borderBottomColor: '#EB008B',
+    borderRightColor: 'transparent',
+    zIndex: -1,
   },
   applyRibbon: {
     backgroundColor: '#FF0080',
@@ -785,6 +909,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 8,
+    // borderTopRightRadius:10,
   },
   applyIconCircle: {
     width: 38,
@@ -796,8 +921,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   applyLabelWhite: {
-    fontSize: 12,
-    fontWeight: '900' as const,
+    fontSize: 13,
+    fontWeight: '600' as const,
     color: '#FFF',
     textAlign: 'center',
     width: '100%',

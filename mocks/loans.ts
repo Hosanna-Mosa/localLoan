@@ -134,16 +134,14 @@ export const loans: LoanItem[] = [
 export const banners = [
   {
     id: '1',
-    image:
-      'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&h=250&fit=crop',
-    title: 'Quick Vehicle Loans',
-    subtitle: 'Get approved in 24 hours',
+    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&h=400&fit=crop', // Motorcycle image
+    title: 'Two Wheeler Loans',
+    subtitle: 'Ab loan milega speed par',
   },
   {
     id: '2',
-    image:
-      'https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?w=600&h=250&fit=crop',
-    title: 'Gold Loan at Low Interest',
-    subtitle: 'Starting from 1% per month',
+    image: 'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?w=800&h=400&fit=crop', // Business/Finance image
+    title: 'Personal Loans',
+    subtitle: 'Get approved instantly',
   },
 ];
